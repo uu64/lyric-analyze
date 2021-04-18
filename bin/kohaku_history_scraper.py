@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import re
+import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,8 +13,7 @@ BASE_URL = 'https://www.nhk.or.jp/kouhaku/history/history.html'
 OUTPUT_PATH = 'data.json'
 
 # The 71st Kohaku was held in 2020.
-# MAX_COUNT = 71
-MAX_COUNT = 10
+MAX_COUNT = 71
 
 # setup selenum using docker images for the Selenium Grid Server
 # REF: https://github.com/SeleniumHQ/docker-selenium
@@ -33,14 +33,11 @@ try:
         driver.get('{}?count={}'.format(BASE_URL, i))
 
         # wait for xhr request
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.ID, 'time'))
-        )
+        time.sleep(3)
 
         # parse html content
         html = driver.page_source
         soup = BeautifulSoup(html, 'lxml')
-        print(html)
 
         # get time information
         time_info = soup.find('div', {'id': 'time'}).find('img', {'class': 'year'}).get('alt')
